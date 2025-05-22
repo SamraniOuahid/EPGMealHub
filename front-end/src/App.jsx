@@ -1,6 +1,6 @@
 import { Routes, Route } from "react-router-dom";
 import Login from "./components/Login";
-import AdminDashboard from "./components/AdminDashboard";
+import AdminDashboard from "./components/admin/AdminDashboard";
 import UserDashboard from "./components/UserDashboard";
 
 function App() {
@@ -12,3 +12,5 @@ function App() {
     </Routes>
   );
 }
+
+export default App;
