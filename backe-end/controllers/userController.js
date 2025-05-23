@@ -56,3 +56,67 @@ exports.getAllUsers = async (req, res) => {
       res.status(500).json({ error: error.message });
     }
   };
+
+// Obtenir un utilisateur par ID (admin uniquement)
+exports.getUserById = async (req, res) => {
+  const { id } = req.params;
+  try {
+    const user = await User.findById(id).select("-password"); // Exclure le mot de passe
+    if (!user) {
+      return res.status(404).json({ message: "Utilisateur introuvable" });
+    }
+    res.status(200).json(user);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+};
+// Mettre à jour un utilisateur (admin uniquement)
+exports.updateUser = async (req, res) => {
+  const { id } = req.params;
+  const { username, password, role } = req.body;
+  try {
+    let updateFields = { username, role };
+    if (password) {
+      updateFields.password = await bcrypt.hash(password, 10);
+    }
+    const user = await User.findByIdAndUpdate(
+      id,
+      updateFields,
+      { new: true }
+    ).select("-password"); // Exclure le mot de passe
+    if (!user) {
+      return res.status(404).json({ message: "Utilisateur introuvable" });
+    }
+    res.status(200).json(user);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+};
+// Supprimer un utilisateur (admin uniquement)
+exports.deleteUser = async (req, res) => {
+  const { id } = req.params;
+  try {
+    const user = await User.findByIdAndDelete(id);
+    if (!user) {
+      return res.status(404).json({ message: "Utilisateur introuvable" });
+    }
+    res.status(200).json({ message: "Utilisateur supprimé" });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+};
+
+// Middleware pour vérifier le token JWT
+exports.verifyToken = (req, res, next) => {
+  const token = req.headers["authorization"];
+  if (!token) {
+    return res.status(401).json({ message: "Accès refusé" });
+  }
+  jwt.verify(token, process.env.JWT_SECRET, (err, decoded) => {
+    if (err) {
+      return res.status(403).json({ message: "Token invalide" });
+    }
+    req.user = decoded; // Stocker les informations de l'utilisateur dans la requête
+    next();
+  });
+};

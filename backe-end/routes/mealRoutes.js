@@ -1,10 +1,11 @@
 const express = require("express");
+const upload = require("../middleware/upload");
 const {
   getAllMeals,
   createMeal,
   deleteMeal,
   updateMeal,
-  getMealById
+  getMealById,
 } = require("../controllers/mealController");
 const router = express.Router();
 
@@ -12,7 +13,7 @@ const router = express.Router();
 router.get("/meals", getAllMeals);
 
 // Route pour créer un repas
-router.post("/meals", createMeal);
+router.post("/", createMeal);
 
 // Route pour supprimer un repas
 router.delete("/meals/:id", deleteMeal);
