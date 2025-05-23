@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import {
   Box,
   Button,
@@ -30,6 +30,7 @@ export default function ManageMeals() {
     discount: "",
     available: true,
   });
+  const fileInputRef = useRef();
 
   const token = localStorage.getItem("token");
 
@@ -53,6 +54,26 @@ export default function ManageMeals() {
     setForm((prev) => ({ ...prev, [name]: value }));
   };
 
+  const handleImageUpload = async (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+    const formData = new FormData();
+    formData.append("image", file);
+
+    try {
+      const res = await axios.post("http://localhost:5000/api/upload", formData, {
+        headers: {
+          "Content-Type": "multipart/form-data",
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      setForm((prev) => ({ ...prev, image: res.data.filename || res.data.url }));
+    } catch (err) {
+      alert("Erreur lors de l'upload de l'image");
+      console.error(err);
+    }
+  };
+
   const handleSubmit = async () => {
     try {
       if (editingMeal) {
@@ -62,9 +83,12 @@ export default function ManageMeals() {
           { headers: { Authorization: `Bearer ${token}` } }
         );
       } else {
-        await axios.post("http://localhost:5000/api/meals", form, {
-          headers: { Authorization: `Bearer ${token}` },
-        });
+        // Correction ici : POST sur /api/meals, pas /api/upload
+        await axios.post(
+          "http://localhost:5000/api/meals",
+          form,
+          { headers: { Authorization: `Bearer ${token}` } }
+        );
       }
       setForm({ name: "", description: "", price: "", image: "", discount: "", available: true });
       setEditingMeal(null);
@@ -151,7 +175,30 @@ export default function ManageMeals() {
           <TextField label="Description" name="description" value={form.description} onChange={handleChange} />
           <TextField label="Prix" name="price" type="number" value={form.price} onChange={handleChange} />
           <TextField label="Remise" name="discount" type="number" value={form.discount} onChange={handleChange} />
-          <TextField label="Image (URL ou nom de fichier)" name="image" value={form.image} onChange={handleChange} />
+          {/* Champ pour choisir une image */}
+          <Button
+            variant="outlined"
+            component="label"
+            sx={{ textTransform: "none" }}
+          >
+            {form.image ? "Changer l'image" : "Choisir une image"}
+            <input
+              type="file"
+              accept="image/*"
+              hidden
+              ref={fileInputRef}
+              onChange={handleImageUpload}
+            />
+          </Button>
+          {/* Affiche l'image sélectionnée */}
+          {form.image && (
+            <img
+              src={`/images/${form.image}`}
+              alt="Aperçu"
+              style={{ width: 120, marginTop: 8, borderRadius: 8 }}
+              onError={e => { e.target.style.display = 'none'; }}
+            />
+          )}
         </DialogContent>
         <DialogActions>
           <Button onClick={() => setOpenDialog(false)}>Annuler</Button>
