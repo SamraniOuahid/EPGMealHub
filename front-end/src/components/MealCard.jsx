@@ -27,9 +27,13 @@ const MealCard = ({ meal }) => {
         <CardMedia
           component="img"
           height="160"
-          image={`/images/${meal.image}`}
+          image={meal.image ? `http://localhost:5000/images/${meal.image}` : '/placeholder-meal.jpg'}
           alt={meal.name}
           sx={{ borderTopLeftRadius: 12, borderTopRightRadius: 12 }}
+          onError={(e) => {
+            e.target.src = '/placeholder-meal.jpg'; // Image par défaut si erreur
+            console.log('Erreur de chargement image:', meal.image);
+          }}
         />
         <CardContent sx={{ flexGrow: 1 }}>
           <Typography variant="h6" fontWeight={600} gutterBottom>

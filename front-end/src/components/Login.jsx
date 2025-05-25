@@ -29,13 +29,17 @@ const Login = () => {
         username,
         password,
       });
-  
+
       const token = response.data.token;
       localStorage.setItem("token", token);
-  
+
       const decoded = jwtDecode(token);
       const role = decoded.role;
-  
+      const userId = decoded.id || decoded._id || decoded.userId; // adapte selon ton payload JWT
+
+      // AJOUTE CETTE LIGNE :
+      localStorage.setItem("userId", userId);
+
       if (role === "admin") {
         navigate("/admin-dashboard");
       } else {

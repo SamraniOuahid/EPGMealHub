@@ -119,6 +119,7 @@ export default function ManageMeals() {
 
   return (
     <Box>
+    
       <Typography variant="h5" gutterBottom>
         Gérer les repas 🍽️
       </Typography>
@@ -153,7 +154,21 @@ export default function ManageMeals() {
               <TableCell>{meal.description}</TableCell>
               <TableCell>{meal.price} MAD</TableCell>
               <TableCell>{meal.discount} MAD</TableCell>
-              <TableCell>{meal.image}</TableCell>
+              <TableCell>
+                {meal.image ? (
+                  <img
+                    src={`http://localhost:5000/images/${meal.image}`}
+                    alt={meal.name}
+                    style={{ width: 50, height: 50, objectFit: 'cover', borderRadius: 4 }}
+                    onError={(e) => { 
+                      e.target.style.display = 'none';
+                      e.target.parentNode.innerHTML = 'Image non disponible';
+                    }}
+                  />
+                ) : (
+                  "Pas d'image"
+                )}
+              </TableCell>
               <TableCell>
                 <IconButton onClick={() => openEditDialog(meal)} color="primary">
                   <Edit />
@@ -191,14 +206,26 @@ export default function ManageMeals() {
             />
           </Button>
           {/* Affiche l'image sélectionnée */}
-          {form.image && (
-            <img
-              src={`/images/${form.image}`}
-              alt="Aperçu"
-              style={{ width: 120, marginTop: 8, borderRadius: 8 }}
-              onError={e => { e.target.style.display = 'none'; }}
-            />
-          )}
+          {form.image ? (
+            <Box>
+              <img
+                src={`/images/${form.image}`}
+                alt="Aperçu"
+                style={{ 
+                  width: 120, 
+                  height: 120, 
+                  objectFit: 'cover',
+                  marginTop: 8, 
+                  borderRadius: 8,
+                  border: '1px solid #eee' 
+                }}
+                onError={(e) => { 
+                  e.target.style.display = 'none';
+                  e.target.parentNode.innerHTML = 'Image non disponible';
+                }}
+              />
+            </Box>
+          ) : null}
         </DialogContent>
         <DialogActions>
           <Button onClick={() => setOpenDialog(false)}>Annuler</Button>
