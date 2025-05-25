@@ -1,5 +1,4 @@
 const express = require("express");
-const upload = require("../middleware/upload");
 const {
   getAllMeals,
   createMeal,
@@ -10,18 +9,10 @@ const {
 const router = express.Router();
 
 // Route pour obtenir tous les repas
-router.get("/meals", getAllMeals);
-
-// Route pour créer un repas
-router.post("/", createMeal);
-
-// Route pour supprimer un repas
-router.delete("/meals/:id", deleteMeal);
-
-// Route pour mettre à jour un repas
-router.put("/meals/:id", updateMeal);
-
-// Route pour obtenir un repas par ID
-router.get("/meals/:id", getMealById);
+router.get("/meals", getAllMeals); // devient /api/meals
+router.post("/meals", createMeal); // devient /api/meals
+router.delete("/meals/:id", deleteMeal); // devient /api/meals/:id
+router.put("/meals/:id", updateMeal); // devient /api/meals/:id
+router.get("/meals/:id", getMealById); // devient /api/meals/:id
 
 module.exports = router;

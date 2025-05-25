@@ -11,6 +11,23 @@ const commandeSchema = new mongoose.Schema({
     ref: "Meal",
     required: true,
   },
+  scheduledTime: {
+    // Temps prévu pour donner le repas
+    type: String,
+    required: true,
+  },
+  price: {
+    // Prix du repas
+    type: Number,
+    required: true,
+  },
+  quantity: {
+    // Quantité commandée
+    type: Number,
+    default: 1,
+    min: 1,
+    required: true,
+  },
   dateCommande: {
     type: Date,
     default: Date.now,
