@@ -11,6 +11,8 @@ import {
   AppBar,
   Toolbar,
   Button,
+  Paper,
+  Fade,
 } from "@mui/material";
 import { useNavigate } from "react-router-dom";
 import LogoutIcon from "@mui/icons-material/Logout";
@@ -24,7 +26,6 @@ const UserDashboard = () => {
   const theme = useTheme();
   const navigate = useNavigate();
 
-  // Fonction de déconnexion
   const handleLogout = () => {
     localStorage.removeItem("token");
     localStorage.removeItem("userId");
@@ -48,146 +49,101 @@ const UserDashboard = () => {
   }, []);
 
   return (
-    <Box sx={{ pb: 8 }}>
-      {/* Barre de navigation */}
-      <AppBar
-        position="static"
-        sx={{ mb: 4, backgroundColor: theme.palette.primary.main }}
+    <Box sx={{ minHeight: "100vh", bgcolor: "#f8fafc" }}>
+      <AppBar 
+        position="fixed" 
+        elevation={0}
+        sx={{ 
+          bgcolor: 'white', 
+          borderBottom: '1px solid',
+          borderColor: 'grey.200'
+        }}
       >
-        <Toolbar sx={{ display: "flex", justifyContent: "space-between" }}>
+        <Toolbar sx={{ justifyContent: "space-between" }}>
           <Box sx={{ display: "flex", alignItems: "center" }}>
-            <RestaurantMenuIcon sx={{ mr: 1 }} />
-            <Typography variant="h6" component="div">
+            <RestaurantMenuIcon sx={{ mr: 1, color: theme.palette.primary.main }} />
+            <Typography variant="h6" component="div" color="primary" fontWeight="bold">
               EPG MealHub
             </Typography>
           </Box>
           <Button
-            color="inherit"
+            variant="outlined"
+            color="primary"
             onClick={handleLogout}
             startIcon={<LogoutIcon />}
-            sx={{ fontWeight: 500 }}
+            sx={{ 
+              fontWeight: 500,
+              borderRadius: 2,
+              textTransform: 'none'
+            }}
           >
             Déconnexion
           </Button>
         </Toolbar>
       </AppBar>
 
-      <Box
-        sx={{
-          minHeight: "calc(100vh - 64px)", // Ajustement pour la barre d'app
-          background: `linear-gradient(to bottom right, ${alpha(
-            theme.palette.primary.light,
-            0.1
-          )}, #f8f9fa)`,
-          py: 4,
-          px: { xs: 2, md: 0 },
-        }}
-      >
-        <Container maxWidth="xl">
-          {/* Hero Section */}
-          <Box
-            sx={{
-              textAlign: "center",
-              mb: 8,
-              maxWidth: 800,
-              mx: "auto",
-            }}
-          >
-            <Typography
-              variant="h2"
-              component="h1"
-              gutterBottom
-              sx={{
-                fontWeight: 700,
-                color: theme.palette.primary.main,
-                fontSize: { xs: "2.25rem", sm: "3rem", md: "3.75rem" },
-                lineHeight: 1.2,
-                mb: 3,
+      <Box sx={{ pt: 8 }}>
+        <Container maxWidth="xl" sx={{ py: 6 }}>
+          <Fade in={true} timeout={1000}>
+            <Paper 
+              elevation={0}
+              sx={{ 
+                p: { xs: 3, md: 6 }, 
+                mb: 6,
+                background: `linear-gradient(135deg, ${alpha(theme.palette.primary.light, 0.1)}, ${alpha(theme.palette.primary.main, 0.05)})`,
+                borderRadius: 4,
+                textAlign: 'center'
               }}
             >
-              Découvrez nos délicieux repas{" "}
-              <Box
-                component="span"
-                sx={{ color: theme.palette.secondary.main }}
-              >
-                EPG MealHub
-              </Box>{" "}
-              🍽️
-            </Typography>
-
-            <Typography
-              variant="h6"
-              component="p"
-              sx={{
-                color: "text.secondary",
-                fontSize: { xs: "1rem", md: "1.25rem" },
-                lineHeight: 1.6,
-              }}
-            >
-              Réservez entre <strong>9h et 18h</strong> pour bénéficier de nos{" "}
-              <Box
-                component="span"
+              <Typography
+                variant="h2"
+                component="h1"
                 sx={{
-                  bgcolor: alpha(theme.palette.warning.light, 0.3),
-                  px: 1,
-                  borderRadius: 1,
+                  fontSize: { xs: '2rem', sm: '2.5rem', md: '3rem' },
+                  fontWeight: 800,
+                  color: theme.palette.primary.dark,
+                  mb: 2,
+                  lineHeight: 1.2
                 }}
               >
-                offres exclusives
-              </Box>{" "}
-              et éviter l'affluence.
-            </Typography>
-          </Box>
+                Bienvenue sur EPG MealHub
+              </Typography>
+              <Typography
+                variant="h6"
+                sx={{
+                  color: 'text.secondary',
+                  maxWidth: '800px',
+                  mx: 'auto',
+                  mb: 4,
+                  lineHeight: 1.6
+                }}
+              >
+                Découvrez notre sélection de repas préparés avec soin. Commandez entre{' '}
+                <Box component="span" sx={{ color: 'primary.main', fontWeight: 600 }}>
+                  9h et 18h
+                </Box>{' '}
+                pour profiter de nos meilleures offres.
+              </Typography>
+            </Paper>
+          </Fade>
 
-          {/* Content */}
           {error ? (
-            <Box
-              sx={{
-                display: "flex",
-                justifyContent: "center",
-                alignItems: "center",
-                minHeight: "50vh",
-              }}
-            >
-              <Typography color="error">{error}</Typography>
+            <Box sx={{ textAlign: 'center', py: 8 }}>
+              <Typography color="error" variant="h6">{error}</Typography>
             </Box>
           ) : loading ? (
-            <Box
-              sx={{
-                display: "flex",
-                justifyContent: "center",
-                alignItems: "center",
-                minHeight: "50vh",
-              }}
-            >
-              <CircularProgress
-                size={60}
-                thickness={4}
-                sx={{ color: theme.palette.primary.main }}
-              />
+            <Box sx={{ display: 'flex', justifyContent: 'center', py: 8 }}>
+              <CircularProgress size={60} thickness={4} />
             </Box>
           ) : (
             <Grid container spacing={4} justifyContent="center">
               {meals.map((meal) => (
-                <Grid
-                  item
-                  key={meal._id}
-                  xs={12}
-                  sm={6}
-                  md={4}
-                  lg={3}
-                  sx={{ display: "flex", justifyContent: "center" }}
-                >
-                  <MealCard
-                    meal={meal}
-                    sx={{
-                      transition: "transform 0.3s, box-shadow 0.3s",
-                      "&:hover": {
-                        transform: "translateY(-8px)",
-                        boxShadow: 3,
-                      },
-                    }}
-                  />
+                <Grid item key={meal._id} xs={12} sm={6} md={4} lg={3}>
+                  <Fade in={true} timeout={800}>
+                    <Box>
+                      <MealCard meal={meal} />
+                    </Box>
+                  </Fade>
                 </Grid>
               ))}
             </Grid>

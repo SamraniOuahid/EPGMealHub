@@ -1,25 +1,28 @@
 import {
-  Dialog, DialogTitle, DialogContent, DialogActions,
-  Button, TextField, Typography, Box, Chip, Stack,
-  InputAdornment, Slider, Divider
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogActions,
+  Button,
+  TextField,
+  Typography,
+  Box,
+  Chip,
+  Stack,
+  InputAdornment,
+  Slider,
+  Divider,
+  IconButton,
 } from "@mui/material";
-import { AccessTime, Restaurant, Close, CheckCircle } from "@mui/icons-material";
+import {
+  AccessTime,
+  Restaurant,
+  Close,
+  Add,
+  Remove,
+} from "@mui/icons-material";
 import axios from "axios";
 import { useState } from "react";
-import { styled } from "@mui/material/styles";
-
-const GradientButton = styled(Button)({
-  background: 'linear-gradient(45deg, #FE6B8B 30%, #FF8E53 90%)',
-  border: 0,
-  borderRadius: 25,
-  color: 'white',
-  height: 48,
-  padding: '0 30px',
-  boxShadow: '0 3px 5px 2px rgba(255, 105, 135, .3)',
-  '&:hover': {
-    background: 'linear-gradient(45deg, #FF8E53 30%, #FE6B8B 90%)',
-  },
-});
 
 const OrderDialog = ({ open, onClose, meal }) => {
   const [time, setTime] = useState("");
@@ -54,7 +57,6 @@ const OrderDialog = ({ open, onClose, meal }) => {
       });
 
       onClose();
-      // Ici vous pourriez utiliser un système de notifications plus élégant
       alert("Commande passée avec succès !");
     } catch (err) {
       console.error("Erreur de commande:", err);
@@ -63,81 +65,100 @@ const OrderDialog = ({ open, onClose, meal }) => {
   };
 
   return (
-    <Dialog 
-      open={open} 
+    <Dialog
+      open={open}
       onClose={onClose}
       PaperProps={{
         sx: {
           borderRadius: 4,
-          p: 2,
-          minWidth: 400,
-          background: 'linear-gradient(to bottom, #f5f7fa 0%, #e4e8f0 100%)'
+          maxWidth: 480,
+          margin: 2
         }
       }}
     >
-      <DialogTitle sx={{ textAlign: 'center', py: 2 }}>
-        <Stack direction="row" alignItems="center" justifyContent="center" spacing={1}>
+      <DialogTitle sx={{ 
+        pb: 1,
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'space-between'
+      }}>
+        <Stack direction="row" spacing={1} alignItems="center">
           <Restaurant color="primary" />
-          <Typography variant="h6" color="primary" fontWeight={700}>
+          <Typography variant="h6" fontWeight={700}>
             Commander {meal.name}
           </Typography>
         </Stack>
+        <IconButton onClick={onClose} size="small">
+          <Close />
+        </IconButton>
       </DialogTitle>
 
-      <DialogContent>
-        <Stack spacing={3} sx={{ py: 2 }}>
-          {/* Contrôle de quantité */}
+      <DialogContent dividers>
+        <Stack spacing={4} sx={{ pt: 2 }}>
           <Box>
-            <Typography gutterBottom>Quantité</Typography>
-            <Slider
-              value={quantity}
-              onChange={(e, newValue) => setQuantity(newValue)}
-              min={1}
-              max={10}
-              step={1}
-              marks
-              valueLabelDisplay="auto"
-              sx={{ maxWidth: 300 }}
+            <Typography variant="subtitle1" fontWeight={600} gutterBottom>
+              Quantité
+            </Typography>
+            <Stack direction="row" spacing={2} alignItems="center">
+              <IconButton 
+                onClick={() => setQuantity(Math.max(1, quantity - 1))}
+                size="small"
+                color="primary"
+              >
+                <Remove />
+              </IconButton>
+              <Typography variant="h6" sx={{ minWidth: 40, textAlign: 'center' }}>
+                {quantity}
+              </Typography>
+              <IconButton 
+                onClick={() => setQuantity(Math.min(10, quantity + 1))}
+                size="small"
+                color="primary"
+              >
+                <Add />
+              </IconButton>
+            </Stack>
+          </Box>
+
+          <Box>
+            <Typography variant="subtitle1" fontWeight={600} gutterBottom>
+              Heure de retrait
+            </Typography>
+            <TextField
+              fullWidth
+              type="time"
+              value={time}
+              onChange={(e) => setTime(e.target.value)}
+              InputProps={{
+                startAdornment: (
+                  <InputAdornment position="start">
+                    <AccessTime color="primary" />
+                  </InputAdornment>
+                ),
+                inputProps: { min: "09:00", max: "18:00" }
+              }}
+              sx={{ mt: 1 }}
             />
           </Box>
 
-          {/* Sélection du temps */}
-          <TextField
-            fullWidth
-            label="Heure de retrait"
-            type="time"
-            value={time}
-            onChange={(e) => setTime(e.target.value)}
-            InputProps={{
-              startAdornment: (
-                <InputAdornment position="start">
-                  <AccessTime color="action" />
-                </InputAdornment>
-              ),
-              inputProps: { min: "09:00", max: "18:00" }
-            }}
-          />
-
-          {/* Affichage du prix */}
           <Box sx={{ 
-            p: 2, 
-            borderRadius: 2, 
-            bgcolor: 'background.paper',
-            boxShadow: 1
+            p: 3,
+            bgcolor: 'grey.50',
+            borderRadius: 2
           }}>
-            <Stack spacing={1}>
+            <Stack spacing={2}>
               <Stack direction="row" justifyContent="space-between">
-                <Typography variant="body1">Prix unitaire:</Typography>
-                <Typography>{meal.price.toFixed(2)} DH</Typography>
+                <Typography color="text.secondary">Prix unitaire</Typography>
+                <Typography fontWeight={500}>{meal.price.toFixed(2)} DH</Typography>
               </Stack>
-              
+
               {time && (
                 <>
                   <Stack direction="row" justifyContent="space-between">
-                    <Typography variant="body1">Remise:</Typography>
+                    <Typography color="text.secondary">Remise</Typography>
                     <Chip 
-                      label={`-${calculateDiscount().toFixed(2)} DH`} 
-                      color="success" 
+                      label={`-${calculateDiscount().toFixed(2)} DH`}
+                      color="success"
                       size="small"
                     />
                   </Stack>
@@ -146,7 +167,7 @@ const OrderDialog = ({ open, onClose, meal }) => {
               )}
 
               <Stack direction="row" justifyContent="space-between">
-                <Typography variant="h6">Total:</Typography>
+                <Typography variant="h6" fontWeight={600}>Total</Typography>
                 <Typography variant="h6" color="primary" fontWeight={700}>
                   {calculateTotalPrice().toFixed(2)} DH
                 </Typography>
@@ -156,21 +177,31 @@ const OrderDialog = ({ open, onClose, meal }) => {
         </Stack>
       </DialogContent>
 
-      <DialogActions sx={{ p: 3, pt: 0 }}>
+      <DialogActions sx={{ p: 3 }}>
         <Button 
-          startIcon={<Close />} 
           onClick={onClose}
-          sx={{ fontWeight: 600 }}
+          variant="outlined"
+          sx={{ 
+            borderRadius: 2,
+            textTransform: 'none',
+            fontWeight: 600
+          }}
         >
           Annuler
         </Button>
-        <GradientButton
-          startIcon={<CheckCircle />}
+        <Button
           onClick={handleOrder}
+          variant="contained"
           disabled={!time}
+          sx={{ 
+            borderRadius: 2,
+            textTransform: 'none',
+            fontWeight: 600,
+            px: 4
+          }}
         >
-          Confirmer la commande
-        </GradientButton>
+          Confirmer
+        </Button>
       </DialogActions>
     </Dialog>
   );
