@@ -1,3 +1,5 @@
+<img width="1920" height="898" alt="image" src="https://github.com/user-attachments/assets/489edaa6-e62b-43c8-b1c9-307b6df68571" />
+
 # EPGMealHub Backend
 
 ## Introduction
